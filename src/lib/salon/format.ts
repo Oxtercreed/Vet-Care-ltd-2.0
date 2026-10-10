@@ -1,0 +1,245 @@
+import { format, isToday, isTomorrow, parseISO } from "date-fns";
+import type { Appointment, AppointmentStatus, Category, PaymentMethod } from "./types";
+export { categoryLabel, CATEGORY_ORDER as categoryOrder } from "./category-labels";
+
+export function formatTsh(n: number) {
+  return `TSh ${n.toLocaleString("en-US")}`;
+}
+
+export function formatPriceRange(min: number, max?: number) {
+  if (!max || max === min) return formatTsh(min);
+  return `From ${formatTsh(min)}`;
+}
+
+export function formatDuration(min: number, max?: number) {
+  if (!max || max === min) return min >= 60 ? `${Math.round(min / 60)} hr${min >= 120 ? "s" : ""}` : `${min} min`;
+  const a = min >= 60 ? `${min / 60}h` : `${min} min`;
+  const b = max >= 60 ? `${max / 60}h` : `${max} min`;
+  if (min < 60 && max < 60) return `${min}–${max} min`;
+  return `${min}–${max} min`;
+}
+
+export function formatDurationLong(min: number, max?: number) {
+  if (!max || max === min) {
+    if (min < 60) return `${min} min`;
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return m ? `${h} hr ${m} min` : `${h} hr`;
+  }
+  return `${min}–${max} min`;
+}
+
+export function greeting(now = new Date()) {
+  const h = now.getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+export function formatApptWhen(date: string, time: string) {
+  const d = parseISO(`${date}T${time}:00`);
+  const clock = format(d, "h:mm a");
+  if (isToday(d)) return `Today · ${clock}`;
+  if (isTomorrow(d)) return `Tomorrow · ${clock}`;
+  return `${format(d, "EEE d MMM")} · ${clock}`;
+}
+
+export function formatLongDate(date: string) {
+  return format(parseISO(`${date}T12:00:00`), "EEEE, d MMMM");
+}
+
+export function formatShortDate(date: string) {
+  return format(parseISO(`${date}T12:00:00`), "EEE, d MMM");
+}
+
+export function formatClock(time: string) {
+  const [h, m] = time.split(":").map(Number);
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  return format(d, "h:mm a");
+}
+
+export function paymentLabel(m: PaymentMethod) {
+  const map: Record<PaymentMethod, string> = {
+    mpesa: "M-Pesa",
+    airtel: "Airtel Money",
+    tigo: "Tigo Pesa",
+  };
+  return map[m];
+}
+
+export function statusLabel(s: AppointmentStatus) {
+  const map: Record<AppointmentStatus, string> = {
+    requested: "Awaiting confirmation",
+    payment_pending: "Payment pending",
+    confirmed: "Confirmed",
+    checked_in: "Checked in",
+    in_service: "In service",
+    completed: "Completed",
+    cancelled: "Cancelled",
+    no_show: "No-show",
+    expired: "Expired",
+  };
+  return map[s];
+}
+
+export type DisplayPhase =
+  | "requested"
+  | "payment_pending"
+  | "confirmed"
+  | "today"
+  | "checked_in"
+  | "in_service"
+  | "completed"
+  | "cancelled"
+  | "no_show"
+  | "expired";
+
+export function displayPhase(a: Appointment, now = new Date()): DisplayPhase {
+  if (a.status === "cancelled") return "cancelled";
+  if (a.status === "completed") return "completed";
+  if (a.status === "no_show") return "cancelled";
+  if (a.status === "expired") return "payment_pending";
+  // Waiting for clinic to accept — never show as confirmed
+  if (a.status === "requested" || (a.needsProviderConfirm && !a.providerConfirmed)) {
+    return "requested";
+  }
+  if (a.status === "payment_pending") return "payment_pending";
+  if (a.status === "in_service") return "in_service";
+  if (a.status === "checked_in") return "checked_in";
+  const d = parseISO(`${a.date}T${a.time}:00`);
+  if (isToday(d) || (d.getTime() <= now.getTime() && a.status === "confirmed")) return "today";
+  return "confirmed";
+}
+
+export function phaseCopy(phase: DisplayPhase, time?: string) {
+  switch (phase) {
+    case "requested":
+      return {
+        title: "Waiting for clinic",
+        body: "Your request was sent. The clinic must accept this time before you pay. We'll notify you when it's accepted.",
+      };
+    case "payment_pending":
+      return {
+        title: "Accepted — pay to book",
+        body: "The clinic accepted your time. Pay the deposit now to finish booking.",
+      };
+    case "confirmed":
+      return {
+        title: "Booked & paid",
+        body: "You're booked. We'll remind you before your visit.",
+      };
+    case "today":
+      return {
+        title: "Today",
+        body: time ? `Your appointment is today at ${formatClock(time)}.` : "Your appointment is today.",
+      };
+    case "checked_in":
+      return {
+        title: "Checked in",
+        body: "You're checked in. Your veterinarian will see you and your pet shortly.",
+      };
+    case "in_service":
+      return {
+        title: "Your veterinarian is ready",
+        body: "Your appointment is starting now.",
+      };
+    case "completed":
+      return {
+        title: "Completed",
+        body: "Thanks for visiting Vet Care LTD.",
+      };
+    case "cancelled":
+      return {
+        title: "Cancelled",
+        body: "This appointment has been cancelled.",
+      };
+    case "no_show":
+      return {
+        title: "No-show",
+        body: "This appointment was marked as a no-show.",
+      };
+    default:
+      return {
+        title: "Appointment",
+        body: "Details for this visit.",
+      };
+  }
+}
+
+export function nextOpenDays(count = 14) {
+  const days: Date[] = [];
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+  while (days.length < count) {
+    if (cursor.getDay() !== 0) days.push(new Date(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return days;
+}
+
+export function nextBookingId(n: number) {
+  return `UL-${String(n).padStart(5, "0")}`;
+}
+
+export function hashUnavailable(date: string, stylistId: string) {
+  const times = TIME_SLOTS;
+  let h = 0;
+  const key = date + stylistId;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  const a = times[h % times.length];
+  const b = times[(h * 7) % times.length];
+  return new Set(a === b ? [a] : [a, b]);
+}
+
+export function dateHasAvailability(date: string, stylistId: string) {
+  return hashUnavailable(date, stylistId).size < TIME_SLOTS.length;
+}
+
+export const TIME_SLOTS = ["09:00", "10:00", "11:30", "13:00", "14:00", "15:00", "16:30", "17:30"];
+
+export const TIME_GROUPS: { label: string; slots: string[] }[] = [
+  { label: "Morning", slots: ["09:00", "10:00", "11:30"] },
+  { label: "Afternoon", slots: ["13:00", "14:00", "15:00"] },
+  { label: "Evening", slots: ["16:30", "17:30"] },
+];
+
+
+export const SENSITIVITY_OPTIONS = ["First visit", "Anxious / nervous", "Senior pet", "Puppy / kitten", "Skin sensitivity", "Other"];
+
+/** Normalize any TZ mobile input to local 07XXXXXXXX / 06XXXXXXXX (no +255). */
+export function toLocalTzPhone(input: string): string {
+  let d = input.replace(/\D/g, "");
+  if (d.startsWith("255") && d.length >= 12) d = `0${d.slice(3)}`;
+  if (d.length === 9 && (d.startsWith("6") || d.startsWith("7"))) d = `0${d}`;
+  if (d.startsWith("0") && d.length > 10) d = d.slice(0, 10);
+  return d;
+}
+
+/** Display phone as 07XX XXX XXX for UI (never +255). */
+export function displayLocalPhone(input: string): string {
+  const p = toLocalTzPhone(input);
+  if (p.length === 10) return `${p.slice(0, 4)} ${p.slice(4, 7)} ${p.slice(7)}`;
+  return p || input;
+}
+
+export function isValidLocalTzPhone(input: string): boolean {
+  return /^0[67]\d{8}$/.test(toLocalTzPhone(input));
+}
+
+
+/** Stable customer id from phone only (name never affects identity). */
+export function customerIdFromPhone(phone: string): string {
+  const local = toLocalTzPhone(phone);
+  const digits = local.replace(/\D/g, "");
+  // Prefer full local 10-digit 07…; fall back to last 9
+  const key = digits.length >= 10 ? digits.slice(-10) : digits.slice(-9);
+  return `cust-${key || "guest"}`;
+}
+
+export function phonesMatch(a: string, b: string): boolean {
+  const da = toLocalTzPhone(a).replace(/\D/g, "");
+  const db = toLocalTzPhone(b).replace(/\D/g, "");
+  if (!da || !db) return false;
+  return da === db || da.slice(-9) === db.slice(-9);
+}

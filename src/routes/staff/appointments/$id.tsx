@@ -1,0 +1,433 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { CalendarPlus, MessageCircle, Send } from "lucide-react";
+import { ConfirmSheet } from "@/components/salon/confirm-sheet";
+import { Photo } from "@/components/salon/photo";
+import { PayOverlay } from "@/components/salon/pay-overlay";
+import { ScreenHeader } from "@/components/salon/screen-header";
+import { StatusPill } from "@/components/salon/status-pill";
+import { formatClock, formatDurationLong, formatTsh } from "@/lib/salon/format";
+import { nextActionFor as nextAction } from "@/lib/engines/rules";
+import { collectUntilPaid } from "@/lib/payments/collect-client";
+import { getService, getStylist, SALON } from "@/lib/salon/data";
+import { useSalonStore } from "@/lib/salon/store";
+
+export const Route = createFileRoute("/staff/appointments/$id")({
+  component: StaffAppointment,
+});
+
+function StaffAppointment() {
+  const { id } = Route.useParams();
+  const appt = useSalonStore((s) => s.appointments.find((a) => a.id === id));
+  const checkIn = useSalonStore((s) => s.checkIn);
+  const startService = useSalonStore((s) => s.startService);
+  const completeService = useSalonStore((s) => s.completeService);
+  const cancelAppointment = useSalonStore((s) => s.cancelAppointment);
+  const collectBalance = useSalonStore((s) => s.collectBalance);
+  const applyDiscount = useSalonStore((s) => s.applyDiscount);
+  const settings = useSalonStore((s) => s.settings);
+  const markNoShow = useSalonStore((s) => s.markNoShow);
+  const confirmProvider = useSalonStore((s) => s.confirmProvider);
+  const declineProvider = useSalonStore((s) => s.declineProvider);
+  const setAppointmentPhotos = useSalonStore((s) => s.setAppointmentPhotos);
+  const navigate = useNavigate();
+  const [confirm, setConfirm] = useState<"start" | "complete" | "cancel" | "no_show" | null>(null);
+  const [paying, setPaying] = useState<"idle" | "sending" | "waiting" | "confirming">("idle");
+  const [payMessage, setPayMessage] = useState("");
+  const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
+  const payAbortRef = useRef<AbortController | null>(null);
+  const [discountPct, setDiscountPct] = useState(0);
+
+  if (!appt) {
+    return (
+      <main className="px-5 py-16 text-center">
+        <p className="text-title font-normal">Appointment unavailable</p>
+        <Link to="/staff" className="mt-6 inline-block text-body">
+          Back to today
+        </Link>
+      </main>
+    );
+  }
+
+  const booking = appt;
+  const service = getService(booking.serviceId);
+  const stylist = getStylist(booking.stylistId);
+  const action = nextAction(booking);
+  const wa = `https://wa.me/${booking.customerPhone.replace(/\D/g, "").replace(/^0/, "255")}`;
+
+  function runPrimary() {
+    if (!action) return;
+    if (action.event === "check_in") checkIn(booking.id);
+    if (action.event === "start") setConfirm("start");
+    if (action.event === "complete") setConfirm("complete");
+    if (action.event === "review") void navigate({ to: "/staff/more" });
+  }
+
+  async function collectNow() {
+    setPayMessage("");
+    setPaying("sending");
+    payAbortRef.current?.abort();
+    const ac = new AbortController();
+    payAbortRef.current = ac;
+    const result = await collectUntilPaid({
+      phone: booking.customerPhone,
+      amount: booking.remaining,
+      description: `Vet Care balance ${booking.id}`,
+      bookingId: booking.id,
+      customerId: booking.customerId,
+      customerName: booking.customerName,
+      method: booking.paymentMethod,
+      kind: "balance",
+      existingOrderId: pendingOrderId || booking.paymentOrderId || undefined,
+      signal: ac.signal,
+      onPromptSent: (oid) => {
+        setPendingOrderId(oid);
+        setPaying("waiting");
+      },
+    });
+    if (result.ok) {
+      setPendingOrderId(null);
+      setPaying("confirming");
+      collectBalance(booking.id, result.orderId);
+      setPaying("idle");
+      return;
+    }
+    setPaying("idle");
+    setPayMessage(result.message);
+  }
+
+  return (
+    <main className="mx-auto min-h-dvh max-w-lg pb-10">
+      <ScreenHeader title="Appointment" />
+      <div className="px-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-title font-normal">{appt.customerName}</p>
+            {appt.petName && (
+              <p className="mt-1 text-body text-muted">
+                🐾 {appt.petName}
+                {appt.petType ? ` · ${appt.petType}` : ""}
+                {appt.petBreed ? ` · ${appt.petBreed}` : ""}
+                {appt.petAge ? ` · ${appt.petAge}` : ""}
+              </p>
+            )}
+            <div className="mt-2">
+              <StatusPill status={appt.status} />
+            </div>
+          </div>
+        </div>
+
+        {(booking.status === "requested" || (booking.needsProviderConfirm && !booking.providerConfirmed)) && booking.status !== "cancelled" && (
+          <section className="mt-6 rounded-[24px] border border-ink bg-surface p-5">
+            <p className="text-body font-medium">Accept this booking request?</p>
+            <p className="mt-1 text-support text-muted">
+              Customer is waiting. Accept to hold the time — they pay the deposit after you accept.
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <Button type="button" className="h-12 bg-ink text-white" onClick={() => confirmProvider(booking.id)}>
+                Accept booking
+              </Button>
+              <Button type="button" variant="secondary" className="h-12" onClick={() => declineProvider(booking.id)}>
+                Decline
+              </Button>
+            </div>
+          </section>
+        )}
+
+        <section className="mt-8 rounded-[24px] bg-surface p-5">
+          <p className="text-micro uppercase tracking-[0.16em] text-muted">Customer</p>
+          <p className="mt-2 text-body font-medium">{appt.customerName}</p>
+          <p className="text-body text-muted">{appt.customerPhone}</p>
+          <p className="mt-2 text-support text-muted">
+            {appt.source === "walk_in" ? "Walk-in" : "Returning customer"}
+          </p>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <a href={`tel:${appt.customerPhone}`}>
+              <Button variant="secondary" className="h-11 w-full">
+                Call
+              </Button>
+            </a>
+            <a href={wa} target="_blank" rel="noreferrer">
+              <Button variant="secondary" className="h-11 w-full gap-1">
+                <MessageCircle className="size-4" strokeWidth={1.75} />
+                WhatsApp
+              </Button>
+            </a>
+          </div>
+          <Link
+            to="/staff/customers/$id"
+            params={{ id: appt.customerId }}
+            className="mt-3 block text-center text-support"
+          >
+            View customer
+          </Link>
+        </section>
+
+        <section className="mt-4 rounded-[24px] bg-surface p-5">
+          <p className="text-micro uppercase tracking-[0.16em] text-muted">Share pass</p>
+          <p className="mt-2 text-support text-muted">
+            Send booking details to the clinic WhatsApp or add this visit to Google Calendar.
+          </p>
+          <div className="mt-4 grid grid-cols-1 gap-2">
+            <a
+              href={`${SALON.whatsapp}?text=${encodeURIComponent(
+                `Vet Care booking pass\n\nRef: ${appt.id}\nService: ${service?.name ?? "—"}\n` +
+                  (appt.petName
+                    ? `Pet: ${appt.petName}${appt.petType ? ` (${appt.petType})` : ""}\n`
+                    : "") +
+                  `Parent: ${appt.customerName} (${appt.customerPhone})\n` +
+                  `When: ${appt.date} ${appt.time}\n` +
+                  `Vet: ${stylist?.name ?? "Any available"}\n` +
+                  `Status: ${appt.status}`
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Button variant="secondary" className="h-12 w-full gap-2">
+                <Send className="size-4" strokeWidth={1.75} />
+                Send pass to clinic WhatsApp
+              </Button>
+            </a>
+            <a
+              href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+                `Vet Care: ${service?.name ?? "Visit"}${appt.petName ? ` — ${appt.petName}` : ""}`
+              )}&details=${encodeURIComponent(
+                `Ref ${appt.id}\nParent: ${appt.customerName} (${appt.customerPhone})\n` +
+                  (appt.petName ? `Pet: ${appt.petName}\n` : "") +
+                  `Clinic: ${SALON.addressLine1}, ${SALON.addressLine2}`
+              )}&location=${encodeURIComponent(
+                `${SALON.name}, ${SALON.addressLine1}, ${SALON.addressLine2}`
+              )}&dates=${appt.date.replace(/-/g, "")}T${appt.time.replace(":", "")}00/${appt.date.replace(/-/g, "")}T${String(Number(appt.time.split(":")[0]) + 1).padStart(2, "0")}${appt.time.split(":")[1]}00`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Button variant="secondary" className="h-12 w-full gap-2">
+                <CalendarPlus className="size-4" strokeWidth={1.75} />
+                Add to Google Calendar
+              </Button>
+            </a>
+          </div>
+        </section>
+
+        <section className="mt-4 rounded-[24px] bg-surface p-5">
+          <p className="text-micro uppercase tracking-[0.16em] text-muted">Service</p>
+          <p className="mt-2 text-body font-medium">{service?.name}</p>
+          <p className="text-body text-muted">
+            {stylist?.name ?? "Any available"}
+            <br />
+            {formatClock(appt.time)} · {service ? formatDurationLong(service.durationMin, service.durationMax) : ""}
+          </p>
+          <p className="mt-4 text-body tabular-nums">{formatTsh(appt.total)}</p>
+          <p className="text-support text-muted">
+            Deposit {formatTsh(appt.deposit)} · Balance {formatTsh(appt.remaining)}
+            {appt.discountPercent ? ` · ${appt.discountPercent}% off` : ""}
+          </p>
+
+          {settings.cashierCanDiscount && appt.remaining > 0 && (
+            <div className="mt-4 rounded-2xl border border-line bg-bg p-3">
+              <p className="text-support font-medium">Discount (cashier)</p>
+              <p className="mt-1 text-support text-muted">
+                Admin allows up to {settings.maxDiscountPercent}%
+              </p>
+              <div className="mt-3 flex gap-2">
+                <input
+                  type="number"
+                  min={0}
+                  max={settings.maxDiscountPercent}
+                  value={discountPct}
+                  onChange={(e) => setDiscountPct(Number(e.target.value) || 0)}
+                  className="h-11 w-24 rounded-2xl border border-line bg-surface px-3 text-body"
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="h-11 flex-1"
+                  onClick={() => applyDiscount(appt.id, discountPct, "cashier")}
+                >
+                  Apply discount
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {appt.remaining > 0 && (
+            <Button
+              className="mt-4 h-12 w-full"
+              onClick={() => void collectNow()}
+              disabled={paying !== "idle"}
+            >
+              Push payment USSD · {formatTsh(appt.remaining)}
+            </Button>
+          )}
+          {payMessage && <p className="mt-3 text-support text-muted">{payMessage}</p>}
+        </section>
+
+        {(appt.style || appt.notes || appt.photoData) && (
+          <section className="mt-4 rounded-[24px] bg-surface p-5">
+            <p className="text-micro uppercase tracking-[0.16em] text-muted">Visit notes</p>
+            {appt.style && (
+              <p className="mt-3 text-body">
+                <span className="text-muted">Reason for visit · </span>
+                {appt.style}
+              </p>
+            )}
+            {appt.notes && <p className="mt-2 text-body">{appt.notes}</p>}
+            {appt.sensitivities.length > 0 && (
+              <p className="mt-2 text-support text-muted">{appt.sensitivities.join(" · ")}</p>
+            )}
+            {appt.photoData && (
+              <div className="mt-4 overflow-hidden rounded-2xl">
+                <img src={appt.photoData} alt="Reference" className="h-48 w-full object-cover" />
+              </div>
+            )}
+          </section>
+        )}
+
+        {action && (
+          <Button className="mt-8 h-13 w-full" onClick={runPrimary}>
+            {action.label}
+          </Button>
+        )}
+
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <Button variant="secondary" className="h-11" onClick={() => setConfirm("no_show")}>
+            No-show
+          </Button>
+          <Button variant="danger" className="h-11" onClick={() => setConfirm("cancel")}>
+            Cancel
+          </Button>
+        </div>
+        <p className="mt-6 text-support text-muted">{SALON.phone} · Contact salon</p>
+      </div>
+
+      <ConfirmSheet
+        open={confirm === "start"}
+        title="Start service?"
+        body={
+          <p>
+            {appt.customerName}
+            <br />
+            {service?.name}
+          </p>
+        }
+        confirmLabel="Start"
+        onCancel={() => setConfirm(null)}
+        onConfirm={() => {
+          startService(appt.id);
+          setConfirm(null);
+        }}
+      />
+      <ConfirmSheet
+        open={confirm === "complete"}
+        title="Complete appointment?"
+        body={
+          <p>
+            {appt.customerName}
+            <br />
+            {service?.name}
+          </p>
+        }
+        confirmLabel="Complete"
+        onCancel={() => setConfirm(null)}
+        onConfirm={() => {
+          completeService(appt.id);
+          setConfirm(null);
+        }}
+      />
+      <ConfirmSheet
+        open={confirm === "cancel"}
+        title="Cancel this booking?"
+        body={<p>{appt.customerName} will be notified.</p>}
+        confirmLabel="Cancel booking"
+        danger
+        onCancel={() => setConfirm(null)}
+        onConfirm={() => {
+          cancelAppointment(appt.id);
+          setConfirm(null);
+        }}
+      />
+      <ConfirmSheet
+        open={confirm === "no_show"}
+        title="Mark as no-show?"
+        body={<p>{appt.customerName} didn’t arrive.</p>}
+        confirmLabel="Mark no-show"
+        danger
+        onCancel={() => setConfirm(null)}
+        onConfirm={() => {
+          markNoShow(appt.id);
+          setConfirm(null);
+        }}
+      />
+      <section className="mx-5 mt-4 rounded-[24px] bg-surface p-5">
+        <p className="text-micro uppercase tracking-[0.16em] text-muted">Before / after photos</p>
+        <label className="mt-3 flex items-start gap-3 text-support">
+          <input
+            type="checkbox"
+            checked={!!booking.photoConsent}
+            onChange={(e) => setAppointmentPhotos(booking.id, { photoConsent: e.target.checked })}
+            className="mt-1"
+          />
+          <span>Customer consents to store service photos for quality tracking.</span>
+        </label>
+        {booking.photoConsent && (
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-support text-muted">Before</p>
+              <input
+                type="file"
+                accept="image/*"
+                className="mt-2 block w-full text-support"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  const { pickImageAsSrc } = await import("@/lib/salon/image-upload");
+                  const src = await pickImageAsSrc(f);
+                  setAppointmentPhotos(booking.id, { beforePhoto: src });
+                }}
+              />
+              {booking.beforePhoto && (
+                <Photo src={booking.beforePhoto} alt="Before" className="mt-2 aspect-square w-full rounded-2xl" />
+              )}
+            </div>
+            <div>
+              <p className="text-support text-muted">After</p>
+              <input
+                type="file"
+                accept="image/*"
+                className="mt-2 block w-full text-support"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  const { pickImageAsSrc } = await import("@/lib/salon/image-upload");
+                  const src = await pickImageAsSrc(f);
+                  setAppointmentPhotos(booking.id, { afterPhoto: src });
+                }}
+              />
+              {booking.afterPhoto && (
+                <Photo src={booking.afterPhoto} alt="After" className="mt-2 aspect-square w-full rounded-2xl" />
+              )}
+            </div>
+          </div>
+        )}
+      </section>
+
+      {paying !== "idle" && (
+        <PayOverlay
+          phase={paying}
+          phone={appt.customerPhone}
+          amount={appt.remaining}
+          onCancel={() => {
+            payAbortRef.current?.abort();
+            setPaying("idle");
+            setPayMessage(
+              pendingOrderId
+                ? "Cancelled. Decline open USSD on the phone so you are not charged twice."
+                : "Payment cancelled.",
+            );
+          }}
+        />
+      )}
+    </main>
+  );
+}
