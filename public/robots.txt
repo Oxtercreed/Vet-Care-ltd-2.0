@@ -3,5 +3,3 @@ Allow: /
 Disallow: /admin
 Disallow: /staff
 Disallow: /api
-
-Sitemap: https://wsalon-six.vercel.app/sitemap.xml

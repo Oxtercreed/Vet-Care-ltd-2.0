@@ -6,6 +6,9 @@ import appCss from "../styles.css?url";
 
 const APP_NAME = "Vet Care LTD";
 
+/** Public site URL (set VITE_SITE_URL in Vercel, e.g. https://vetcare.example) — makes share-image and canonical links absolute. */
+const SITE_URL = ((import.meta.env.VITE_SITE_URL as string | undefined) ?? "").trim().replace(/\/+$/, "");
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -28,7 +31,13 @@ export const Route = createRootRoute({
       
       { property: "og:title", content: APP_NAME },
       { property: "og:description", content: "Thoughtful veterinary care in Mikocheni, Dar es Salaam. Book wellness, vaccines, dental, diagnostics and grooming." },
-      { property: "og:image", content: "/og.jpg" },
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: APP_NAME },
+      { property: "og:image", content: `${SITE_URL}/og.jpg` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: `${SITE_URL}/og.jpg` },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: "Vet Care LTD" },
     ],
     links: [
@@ -39,8 +48,7 @@ export const Route = createRootRoute({
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/manifest.webmanifest" },
-      { rel: "canonical", href: "https://wsalon-six.vercel.app/" },
-      { rel: "sitemap", type: "application/xml", href: "/sitemap.xml" },
+      ...(SITE_URL ? [{ rel: "canonical", href: `${SITE_URL}/` }] : []),
     ],
   }),
   component: () => (

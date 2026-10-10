@@ -28,6 +28,20 @@ npm run build
 - Services: wellness, vaccines, dental, diagnostics, medicated grooming
 - English / Swahili
 
+## Deploy (Vercel)
+
+Set these environment variables in the Vercel project:
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Postgres connection string (Supabase) |
+| `BETTER_AUTH_SECRET` | Long random string used to sign sessions |
+| `BETTER_AUTH_URL` | Your public site URL, e.g. `https://your-domain.com` |
+| `VITE_SITE_URL` | Same public URL; makes the share image and canonical link absolute |
+
+Staff sign in with email and password. Existing staff will need to sign in once
+again after this update (the session cookie was renamed).
+
 ## Brand assets
 
 Transparent vector logos live in `public/brand/` (`vet-logo.svg` blue, `vet-logo-light.svg` white,
