@@ -661,7 +661,7 @@ function RescheduleSheet({
 }) {
   const appointments = useSalonStore((s) => s.appointments);
   const timeOff = useSalonStore((s) => s.timeOff);
-  const serviceId = useSalonStore((s) => s.appointments.find((a) => a.date === currentDate)?.serviceId ?? "hair-braiding");
+  const serviceId = useSalonStore((s) => s.appointments.find((a) => a.date === currentDate)?.serviceId ?? "wellness-exam");
   const days = useMemo(() => nextOpenDays(14), []);
   const [date, setDate] = useState(currentDate);
   const [time, setTime] = useState<string | null>(null);
