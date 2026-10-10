@@ -1,20 +1,17 @@
 import pg from "pg";
 
-const DEFAULT_URL =
-  "postgresql://postgres.xkhcwokuxhhchdhqjbyn:" +
-  encodeURIComponent("Jethro@12dick@") +
-  "@aws-1-eu-west-1.pooler.supabase.com:6543/postgres";
-
 let pool: pg.Pool | null = null;
 
 function connectionString() {
-  return process.env.SUPABASE_DB_URL?.trim() || DEFAULT_URL;
+  return process.env.SUPABASE_DB_URL?.trim() || "";
 }
 
 function getPool() {
+  const connStr = connectionString();
+  if (!connStr) return null;
   if (!pool) {
     pool = new pg.Pool({
-      connectionString: connectionString(),
+      connectionString: connStr,
       max: 2,
       ssl: { rejectUnauthorized: false },
       idleTimeoutMillis: 10_000,
@@ -28,7 +25,9 @@ export async function supabaseQuery<T extends Record<string, unknown> = Record<s
   params: unknown[] = [],
 ): Promise<{ ok: true; rows: T[] } | { ok: false }> {
   try {
-    const result = await getPool().query(text, params);
+    const p = getPool();
+    if (!p) return { ok: false };
+    const result = await p.query(text, params);
     return { ok: true, rows: result.rows as T[] };
   } catch {
     return { ok: false };

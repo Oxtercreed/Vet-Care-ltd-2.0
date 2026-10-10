@@ -52,12 +52,9 @@ export async function tryUploadToSupabase(
   file: File,
   pathPrefix = "gallery",
 ): Promise<string | null> {
-  const base =
-    (typeof import.meta !== "undefined" ? import.meta.env.VITE_SUPABASE_URL : undefined) ||
-    "https://xkhcwokuxhhchdhqjbyn.supabase.co";
-  const anon =
-    (typeof import.meta !== "undefined" ? import.meta.env.VITE_SUPABASE_ANON_KEY : undefined) ||
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhraGN3b2t1eGhoY2hkaHFqYnluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzNTMyMjAsImV4cCI6MjEwNTkyOTIyMH0.ETrTW4Z9dBoRX76qxmGzPjYBEWntlRjwrNe7puVMhy8";
+  const base = typeof import.meta !== "undefined" ? import.meta.env.VITE_SUPABASE_URL : undefined;
+  const anon = typeof import.meta !== "undefined" ? import.meta.env.VITE_SUPABASE_ANON_KEY : undefined;
+  if (!base || !anon) return null;
 
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const objectPath = `${pathPrefix}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;

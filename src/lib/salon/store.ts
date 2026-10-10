@@ -264,30 +264,32 @@ export const useSalonStore = create<SalonState>()(
       lastCompletedId: null,
       seedIfNeeded: () => {
         const state = get();
-        // No mock appointments/customers/payments — only keep catalog/team from remote hydrate or empty.
-        const catalog = state.catalog;
-        const SEED_STAFF_IDS = new Set(["sarah", "amina", "grace", "zahra", "lewis"]);
-        const team = (state.team || []).filter((m) => !SEED_STAFF_IDS.has(m.id));
+        const hasLegacySalonServices = state.catalog.some((s) =>
+          ["acrylic-set", "box-braids", "hair-braiding", "silk-press", "gel-nails", "svc-1790594435551"].includes(s.id),
+        );
+        const catalog = hasLegacySalonServices || !state.catalog.length ? catalogSeed : state.catalog;
+        const team = (state.team && state.team.length) ? state.team : teamSeed;
         applyLive(catalog, team);
-        if (state.seeded) return;
+
+        if (state.seeded && !hasLegacySalonServices) return;
+
         set({
           appointments: [],
           customers: [],
           notices: [],
           payments: [],
           reviews: [],
-          offers: state.offers ?? [],
+          offers: state.offers?.length ? state.offers : [],
           audit: [],
           queue: [],
-          catalog,
-          team,
+          catalog: catalogSeed,
+          team: teamSeed,
           staffStatus: {},
-          galleryItems: state.galleryItems ?? [],
+          galleryItems: state.galleryItems?.length ? state.galleryItems : defaultGallery(),
           templates: defaultTemplates,
           settings: state.settings ?? defaultSettings,
           bookingCounter: 1000,
           seeded: true,
-          // Reset demo customer identity if still on legacy seed id
           session:
             state.session.actorId === "cust-gadna" || state.session.actorId === "guest"
               ? { portal: "customer", actorId: "guest", name: "Guest", role: "customer" }
@@ -1245,7 +1247,7 @@ export const useSalonStore = create<SalonState>()(
         }),
     }),
     {
-      name: "vetcare-ops-v1",
+      name: "vetcare-ops-v2",
       skipHydration: true,
       partialize: (s) => ({
         seeded: s.seeded,
@@ -1275,6 +1277,16 @@ export const useSalonStore = create<SalonState>()(
     },
   ),
 );
+
+if (typeof window !== "undefined") {
+  try {
+    localStorage.removeItem("vetcare-ops-v1");
+    localStorage.removeItem("salon-store");
+    localStorage.removeItem("salon-storage");
+  } catch {
+    /* ignore */
+  }
+}
 
 export function useMyAppointments() {
   const appointments = useSalonStore((s) => s.appointments);

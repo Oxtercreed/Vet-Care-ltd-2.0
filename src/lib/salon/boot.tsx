@@ -56,22 +56,24 @@ export function SalonBoot() {
         try {
           const { pullSalonStateFn } = await import("./sync-actions");
           const remoteState = await pullSalonStateFn();
-          useSalonStore.setState({
-            seeded: true,
-            appointments: remoteState.appointments,
-            customers: remoteState.customers,
-            payments: remoteState.payments,
-            queue: remoteState.queue,
-            notices: remoteState.notices,
-            reviews: remoteState.reviews,
-            audit: remoteState.audit,
-            catalog,
-            team,
-            offers,
-          });
-          setLiveServices(catalog);
-          setLiveTeam(team);
-          return;
+          if (remoteState.appointments.length > 0) {
+            useSalonStore.setState({
+              seeded: true,
+              appointments: remoteState.appointments,
+              customers: remoteState.customers,
+              payments: remoteState.payments,
+              queue: remoteState.queue,
+              notices: remoteState.notices,
+              reviews: remoteState.reviews,
+              audit: remoteState.audit,
+              catalog,
+              team,
+              offers,
+            });
+            setLiveServices(catalog);
+            setLiveTeam(team);
+            return;
+          }
         } catch {
           /* empty local */
         }

@@ -133,12 +133,9 @@ export async function pushServiceToSupabase(s: Service) {
 }
 
 export async function deleteServiceFromSupabase(id: string) {
-  const base =
-    (typeof import.meta !== "undefined" ? import.meta.env.VITE_SUPABASE_URL : undefined) ||
-    "https://xkhcwokuxhhchdhqjbyn.supabase.co";
-  const anon =
-    (typeof import.meta !== "undefined" ? import.meta.env.VITE_SUPABASE_ANON_KEY : undefined) ||
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhraGN3b2t1eGhoY2hkaHFqYnluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzNTMyMjAsImV4cCI6MjEwNTkyOTIyMH0.ETrTW4Z9dBoRX76qxmGzPjYBEWntlRjwrNe7puVMhy8";
+  const base = typeof import.meta !== "undefined" ? import.meta.env.VITE_SUPABASE_URL : undefined;
+  const anon = typeof import.meta !== "undefined" ? import.meta.env.VITE_SUPABASE_ANON_KEY : undefined;
+  if (!base || !anon) return;
   try {
     await fetch(`${base}/rest/v1/salon_services?id=eq.${encodeURIComponent(id)}`, {
       method: "DELETE",

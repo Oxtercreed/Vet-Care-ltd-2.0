@@ -1,16 +1,15 @@
-export const SUPABASE_URL = "https://xkhcwokuxhhchdhqjbyn.supabase.co";
-export const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhraGN3b2t1eGhoY2hkaHFqYnluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzNTMyMjAsImV4cCI6MjEwNTkyOTIyMH0.ETrTW4Z9dBoRX76qxmGzPjYBEWntlRjwrNe7puVMhy8";
+export const SUPABASE_URL = "";
+export const SUPABASE_ANON_KEY = "";
 
 const url = () =>
   (typeof process !== "undefined" ? process.env.VITE_SUPABASE_URL : undefined) ||
   (typeof import.meta !== "undefined" ? import.meta.env.VITE_SUPABASE_URL : undefined) ||
-  SUPABASE_URL;
+  "";
 
 const key = () =>
   (typeof process !== "undefined" ? process.env.VITE_SUPABASE_ANON_KEY : undefined) ||
   (typeof import.meta !== "undefined" ? import.meta.env.VITE_SUPABASE_ANON_KEY : undefined) ||
-  SUPABASE_ANON_KEY;
+  "";
 
 export function supabaseConfigured() {
   return Boolean(url() && key());
