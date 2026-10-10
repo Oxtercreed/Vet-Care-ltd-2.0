@@ -30,8 +30,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || "Vet Care LTD", {
       body: data.body || "",
-      icon: "/icons/booking-192.png",
-      badge: "/icons/booking-192.png",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
       tag: data.tag || "booking-push",
       data: { url: data.url || "/staff" },
       requireInteraction: true,

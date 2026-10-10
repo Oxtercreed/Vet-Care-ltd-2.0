@@ -32,8 +32,8 @@ export function showBrowserNotification(
     const n = new Notification(title, {
       body: options?.body,
       tag: options?.tag ?? `vetcare-${Date.now()}`,
-      icon: "/icons/booking-192.png",
-      badge: "/icons/booking-192.png",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
       data: options?.data,
       requireInteraction: true,
     });
