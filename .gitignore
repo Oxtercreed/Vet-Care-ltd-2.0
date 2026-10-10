@@ -6,3 +6,7 @@ screenshots/
 artifacts/
 .grok/
 *.log
+.env
+.env.local
+push-to-github.*
+git-token.*

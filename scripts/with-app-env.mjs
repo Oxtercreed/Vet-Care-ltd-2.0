@@ -105,13 +105,22 @@ export function isMainModule(moduleUrl) {
 }
 
 function resolveCommand(command) {
+  if (command === "vite") {
+    const viteJs = join(projectRoot(), "node_modules", "vite", "bin", "vite.js");
+    try {
+      realpathSync(viteJs);
+      return { bin: process.execPath, argsPrefix: [viteJs] };
+    } catch {}
+  }
   // Prefer local node_modules/.bin so Vercel/CI never miss vite etc.
-  const local = join(projectRoot(), "node_modules", ".bin", command);
+  const isWin = process.platform === "win32";
+  const cmdCandidate = isWin ? `${command}.cmd` : command;
+  const local = join(projectRoot(), "node_modules", ".bin", cmdCandidate);
   try {
     realpathSync(local);
-    return local;
+    return { bin: local, argsPrefix: [] };
   } catch {
-    return command;
+    return { bin: command, argsPrefix: [] };
   }
 }
 
@@ -121,9 +130,14 @@ function main(argv) {
     console.error("usage: node scripts/with-app-env.mjs <command> [args…]");
     process.exit(2);
   }
+  const isWin = process.platform === "win32";
   const env = mergeAppEnv(readAppEnv(projectRoot()), process.env);
-  const resolved = resolveCommand(command);
-  const child = spawn(resolved, args, { stdio: "inherit", env });
+  const { bin, argsPrefix } = resolveCommand(command);
+  const child = spawn(bin, [...argsPrefix, ...args], {
+    stdio: "inherit",
+    env,
+    shell: isWin && !argsPrefix.length,
+  });
   // The dev server is long-running and is stopped by signalling this wrapper.
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
     process.on(signal, () => child.kill(signal));
