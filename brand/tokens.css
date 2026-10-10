@@ -1,4 +1,4 @@
-/* Warembo Village design tokens. Starting point for src/styles.css.
+/* Vet Care LTD design tokens. Starting point for src/styles.css.
    Customer + Landing default to Noir. Staff + Admin default to Ivory. */
 :root,
 :root[data-theme="noir"] {

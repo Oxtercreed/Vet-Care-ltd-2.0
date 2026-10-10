@@ -3,7 +3,7 @@ import { sw } from "./sw";
 
 export type Locale = "en" | "sw";
 
-const KEY = "warembo-locale";
+const KEY = "vetcare-locale";
 
 /** Default is always English unless the user explicitly chose Kiswahili. */
 export function getStoredLocale(): Locale {

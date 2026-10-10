@@ -3,7 +3,7 @@
 **Status:** design only until approved. No schema breaking changes.
 
 ## Goal
-Allow a customer to book more than one service in a single visit (e.g. braids + manicure), with one deposit flow and one staff day view.
+Allow a customer to book more than one service in a single visit (e.g. wellness exam + vaccination), with one deposit flow and one staff day view.
 
 ## Proposed model (additive)
 - New optional table `salon_appointment_items` (appointment_id, service_id, vet_id, duration_min, price, sort).

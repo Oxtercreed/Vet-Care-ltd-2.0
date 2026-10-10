@@ -1,6 +1,6 @@
 export type ThemeId = "noir" | "ivory";
 
-const KEY = "warembo-theme-v2";
+const KEY = "vetcare-theme-v1";
 
 export function getStoredTheme(): ThemeId | null {
   if (typeof window === "undefined") return null;
