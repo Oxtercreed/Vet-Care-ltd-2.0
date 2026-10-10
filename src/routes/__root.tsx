@@ -1,6 +1,5 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
-import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { SalonBoot } from "@/lib/salon/boot";
 import { MotionProvider } from "@/components/motion-provider";
 import appCss from "../styles.css?url";
@@ -50,7 +49,6 @@ export const Route = createRootRoute({
         <HeadContent />
       </head>
       <body className="bg-bg text-ink">
-        <PreviewHostBridge />
         <AuthProvider>
           <MotionProvider>
             <SalonBoot />
