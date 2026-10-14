@@ -1,5 +1,5 @@
 /**
- * Vet Care motion system — single source for timing, easing, reduced-motion.
+ * Richmond Vet motion system — single source for timing, easing, reduced-motion.
  * Use with `motion` package: LazyMotion + m.* components.
  */
 import type { Transition, Variants } from "motion/react";

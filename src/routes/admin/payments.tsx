@@ -87,13 +87,13 @@ function AdminPayments() {
             <p className="text-micro uppercase tracking-[0.16em] text-muted">Payment</p>
             <p className="mt-4 text-section font-normal">{formatTsh(selected.amount)}</p>
             <dl className="mt-6 space-y-3 text-body">
-              <Row k="Customer" v={selected.customerName} />
-              <Row k="Booking" v={selected.bookingId} />
+              <Row k="Customer" v={selected.customerName ?? "—"} />
+              <Row k="Booking" v={selected.bookingId ?? selected.appointmentId ?? "—"} />
               <Row k="Method" v={paymentLabel(selected.method)} />
               <Row k="Status" v={selected.status} />
-              <Row k="Phone" v={selected.phone} />
-              <Row k="Reference" v={selected.orderId ?? "—"} />
-              <Row k="Kind" v={selected.kind} />
+              <Row k="Phone" v={selected.phone ?? "—"} />
+              <Row k="Reference" v={selected.orderId ?? selected.ref ?? "—"} />
+              <Row k="Kind" v={selected.kind ?? "deposit"} />
             </dl>
             <div className="mt-8 flex gap-2">
               {selected.status === "pending" && (

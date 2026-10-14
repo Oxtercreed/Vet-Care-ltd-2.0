@@ -203,7 +203,7 @@ function AdminStaff() {
                 rating: 5,
                 role,
                 phone: String(fd.get("phone")),
-                email: `${id}@vetcare.local`,
+                email: `${id}@havenvet.local`,
                 serviceIds:
                   role === "stylist"
                     ? services.filter((s) => s.category === department).map((s) => s.id)

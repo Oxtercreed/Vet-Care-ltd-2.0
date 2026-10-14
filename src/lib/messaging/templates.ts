@@ -11,8 +11,8 @@ export type TemplateDef = {
 const T: TemplateDef[] = [
   {
     eventType: "booking_confirmed",
-    en: "Hi {{name}}, your {{service}} is confirmed for {{date}} at {{time}} with {{stylist}}. See you at Vet Care LTD, {{address}}.",
-    sw: "Habari {{name}}, huduma yako ya {{service}} imethibitishwa tarehe {{date}} saa {{time}} na {{stylist}}. Tukutane Vet Care LTD, {{address}}.",
+    en: "Hi {{name}}, your {{service}} is confirmed for {{date}} at {{time}} with {{stylist}}. See you at The Richmond Veterinary Hospital, {{address}}.",
+    sw: "Habari {{name}}, huduma yako ya {{service}} imethibitishwa tarehe {{date}} saa {{time}} na {{stylist}}. Tukutane The Richmond Veterinary Hospital, {{address}}.",
     needsNativeReview: true,
   },
   {
@@ -29,8 +29,8 @@ const T: TemplateDef[] = [
   },
   {
     eventType: "reminder_24h",
-    en: "Reminder: {{service}} tomorrow at {{time}} at Vet Care LTD. Reply if you need to reschedule.",
-    sw: "Kikumbusho: {{service}} kesho saa {{time}} Vet Care LTD. Jibu kama unahitaji kubadilisha muda.",
+    en: "Reminder: {{service}} tomorrow at {{time}} at The Richmond Veterinary Hospital. Reply if you need to reschedule.",
+    sw: "Kikumbusho: {{service}} kesho saa {{time}} The Richmond Veterinary Hospital. Jibu kama unahitaji kubadilisha muda.",
     needsNativeReview: true,
   },
   {
@@ -65,14 +65,14 @@ const T: TemplateDef[] = [
   },
   {
     eventType: "review_request",
-    en: "How was your {{service}} at Vet Care LTD? Leave a quick rating in the app.",
-    sw: "Huduma yako ya {{service}} Vet Care LTD ilikuaje? Acha rating kwenye app.",
+    en: "How was your {{service}} at The Richmond Veterinary Hospital? Leave a quick rating in the app.",
+    sw: "Huduma yako ya {{service}} The Richmond Veterinary Hospital ilikuaje? Acha rating kwenye app.",
     needsNativeReview: true,
   },
   {
     eventType: "otp_code",
-    en: "Your Vet Care code is {{code}}. Valid for 10 minutes. Do not share it.",
-    sw: "Namba yako ya Vet Care ni {{code}}. Inatumika dakika 10. Usishiriki na mtu.",
+    en: "Your Richmond Vet code is {{code}}. Valid for 10 minutes. Do not share it.",
+    sw: "Namba yako ya Richmond Vet ni {{code}}. Inatumika dakika 10. Usishiriki na mtu.",
     needsNativeReview: true,
   },
   {
@@ -83,8 +83,8 @@ const T: TemplateDef[] = [
   },
   {
     eventType: "test_message",
-    en: "Vet Care LTD test message. Integrations are connected.",
-    sw: "Ujumbe wa majaribio wa Vet Care LTD. Muunganisho umefanikiwa.",
+    en: "The Richmond Veterinary Hospital test message. Integrations are connected.",
+    sw: "Ujumbe wa majaribio wa The Richmond Veterinary Hospital. Muunganisho umefanikiwa.",
     needsNativeReview: true,
   },
 ];

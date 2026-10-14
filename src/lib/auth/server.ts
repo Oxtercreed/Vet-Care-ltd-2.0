@@ -1,5 +1,5 @@
 /**
- * Better Auth for Vet Care LTD (server-only).
+ * Better Auth for The Richmond Veterinary Hospital (server-only).
  *
  * Runs at same-origin `/api/auth/*` with local email + password sign-in (toggle in
  * `./email-password`). Sessions and users live in Postgres when `DATABASE_URL` is

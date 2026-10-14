@@ -19,10 +19,10 @@ function AdminReviews() {
           <li key={r.id} className="rounded-[24px] bg-surface p-5">
             <p className="text-body font-medium">{r.customerName}</p>
             <p className="text-support text-muted">
-              {getService(r.serviceId)?.name} · {getStylist(r.stylistId)?.name}
+              {(r.serviceId ? getService(r.serviceId)?.name : r.service) ?? "Service"}{r.stylistId ? ` · ${getStylist(r.stylistId)?.name ?? ""}` : ""}
             </p>
             <p className="mt-2 text-body">{"★".repeat(r.rating)}</p>
-            <p className="mt-2 text-body">{r.quote}</p>
+            <p className="mt-2 text-body">{r.quote ?? r.text}</p>
             <div className="mt-4 flex gap-2">
               <Button variant="secondary" className="h-11" onClick={() => publishReview(r.id, !r.published)}>
                 {r.published ? "Hide" : "Publish"}

@@ -1,6 +1,6 @@
-# Vet Care LTD
+# The Richmond Veterinary Hospital
 
-Booking and clinic-operations app for **Vet Care LTD** — Migombani Street, Mikocheni, Dar es Salaam.
+Booking and clinic-operations showcase template for **The Richmond Veterinary Hospital** — Animal Hospital & Wellness Center, Richmond, Greater London.
 Built with TanStack Start (React), Tailwind, Zustand and Supabase/Postgres.
 
 ## Run

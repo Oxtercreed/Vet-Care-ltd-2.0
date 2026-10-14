@@ -1,33 +1,39 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Vet Care LTD logo — true vector SVG on a transparent background (no white box).
- * Two colourways are swapped by theme in styles.css:
- *   .logo-on-dark  → white version, shown on the dark "noir" theme
- *   .logo-on-light → brand-blue version, shown on the light "ivory" theme
+ * The Richmond Veterinary Hospital logo — vector SVG mark paired with clean editorial typography.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
     <span className={cn("inline-flex size-9 shrink-0", className)}>
-      <img src="/brand/vet-mark-light.svg" alt="" className="logo-on-dark size-full object-contain" />
-      <img src="/brand/vet-mark.svg" alt="" className="logo-on-light size-full object-contain" />
+      <img src="/brand/vet-mark-light.svg" alt="Richmond Vet" className="logo-on-dark size-full object-contain" />
+      <img src="/brand/vet-mark.svg" alt="Richmond Vet" className="logo-on-light size-full object-contain" />
     </span>
   );
 }
 
-export function LogoWord({ className }: { className?: string; light?: boolean }) {
+export function LogoWord({ className, light }: { className?: string; light?: boolean }) {
   return (
-    <span className={cn("inline-flex items-center", className)}>
-      <img
-        src="/brand/vet-logo-light.svg"
-        alt="Vet Care LTD"
-        className="logo-on-dark h-11 w-auto max-w-[160px] object-contain object-left"
-      />
-      <img
-        src="/brand/vet-logo.svg"
-        alt="Vet Care LTD"
-        className="logo-on-light h-11 w-auto max-w-[160px] object-contain object-left"
-      />
+    <span className={cn("inline-flex items-center gap-2.5 select-none", className)}>
+      <LogoMark className="size-8" />
+      <span className="leading-tight text-left">
+        <span
+          className={cn(
+            "block font-display text-[1.18rem] font-medium tracking-[0.05em] leading-none",
+            light ? "text-white" : "text-ink"
+          )}
+        >
+          Richmond Vet
+        </span>
+        <span
+          className={cn(
+            "block text-[0.52rem] font-sans font-medium uppercase tracking-[0.24em] mt-0.5",
+            light ? "text-white/80" : "text-muted"
+          )}
+        >
+          Animal Hospital
+        </span>
+      </span>
     </span>
   );
 }

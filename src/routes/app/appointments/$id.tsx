@@ -101,7 +101,7 @@ function AppointmentPage() {
     const result = await collectUntilPaid({
       phone: profile.mpesaPhone || appt.customerPhone,
       amount: appt.deposit || appt.total,
-      description: `Vet Care ${service?.name ?? "booking"} deposit`,
+      description: `${SALON.short} ${service?.name ?? "booking"} deposit`,
       bookingId: appt.id,
       customerId: appt.customerId,
       customerName: appt.customerName,
@@ -120,6 +120,7 @@ function AppointmentPage() {
   }
 
   function addToCalendar() {
+    if (!appt) return;
     const start = `${bookingDate.replace(/-/g, "")}T${bookingTime.replace(":", "")}00`;
     const endH = String(Number(bookingTime.split(":")[0]) + 1).padStart(2, "0");
     const end = `${bookingDate.replace(/-/g, "")}T${endH}${bookingTime.split(":")[1]}00`;
@@ -128,7 +129,7 @@ function AppointmentPage() {
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
       "BEGIN:VEVENT",
-      `SUMMARY:${serviceName}${appt.petName ? ` — ${appt.petName}` : ""} at Vet Care LTD`,
+      `SUMMARY:${serviceName}${appt.petName ? ` — ${appt.petName}` : ""} at ${SALON.name}`,
       `DTSTART:${start}`,
       `DTEND:${end}`,
       `LOCATION:${SALON.addressLine1}, ${SALON.addressLine2}`,
@@ -140,13 +141,13 @@ function AppointmentPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `vetcare-${bookingId}.ics`;
+    a.download = `richmondvet-${bookingId}.ics`;
     a.click();
     URL.revokeObjectURL(url);
     // Also open Google Calendar as fallback convenience
     const gcal = new URL("https://calendar.google.com/calendar/render");
     gcal.searchParams.set("action", "TEMPLATE");
-    gcal.searchParams.set("text", `${serviceName}${appt.petName ? ` — ${appt.petName}` : ""} · Vet Care LTD`);
+    gcal.searchParams.set("text", `${serviceName}${appt.petName ? ` — ${appt.petName}` : ""} · ${SALON.name}`);
     gcal.searchParams.set("dates", `${start}/${end}`);
     gcal.searchParams.set("location", `${SALON.name}, ${SALON.addressLine1}, ${SALON.addressLine2}`);
     gcal.searchParams.set("details", `Ref ${bookingId}${petBit ? `\n${petBit}` : ""}\n${SALON.phone}`);
@@ -154,11 +155,12 @@ function AppointmentPage() {
   }
 
   function clinicWhatsAppHref() {
+    if (!appt) return SALON.whatsapp;
     const petLine = appt.petName
       ? `\n🐾 Pet: ${appt.petName}${appt.petType ? ` (${appt.petType})` : ""}`
       : "";
     const msg =
-      `Habari Vet Care LTD, kuhusu booking yangu:\n\n` +
+      `Hello ${SALON.name}, regarding my booking:\n\n` +
       `📋 Ref: ${bookingId}\n` +
       `🩺 Service: ${serviceName}\n` +
       `📅 Date: ${bookingDate}\n` +
@@ -611,7 +613,7 @@ function timelineFor(phase: ReturnType<typeof displayPhase>) {
   const steps = [
     { key: "confirmed", label: "Appointment confirmed" },
     { key: "reminder", label: "Reminder sent before your appointment" },
-    { key: "arrive", label: "Arrive at Vet Care LTD" },
+    { key: "arrive", label: `Arrive at ${SALON.name}` },
     { key: "service", label: "Your veterinarian takes care of the rest" },
   ];
   const idx =

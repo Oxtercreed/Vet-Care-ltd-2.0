@@ -29,15 +29,15 @@ function buildWhatsAppMessage(opts: {
     ? `\n🐾 Pet: ${opts.petName}${opts.petType ? ` (${opts.petType})` : ""}`
     : "";
   return (
-    `Habari Vet Care LTD, nimefanya booking ya miadi mtandaoni:\n\n` +
+    `Hello The Richmond Veterinary Hospital, I have booked an appointment online:\n\n` +
     `📋 Ref: ${opts.ref}\n` +
     `🩺 Service: ${opts.service}\n` +
     `📅 Date: ${opts.date}\n` +
     `⏰ Time: ${opts.time}` +
     petLine +
     `\n👤 Pet parent: ${opts.guardianName} (${opts.guardianPhone})\n` +
-    `📍 Migombani St, Mikocheni\n\n` +
-    `Asanteni sana!`
+    `📍 24 Church Road, Richmond, Greater London\n\n` +
+    `Thank you!`
   );
 }
 
@@ -100,7 +100,7 @@ function SuccessPage() {
   const calHref =
     appt && service
       ? buildGoogleCalUrl({
-          title: `Vet Care LTD: ${service.name}${appt.petName ? ` — ${appt.petName}` : ""}`,
+          title: `The Richmond Veterinary Hospital: ${service.name}${appt.petName ? ` — ${appt.petName}` : ""}`,
           details:
             `Booking Ref: ${appt.id}\n` +
             `Service: ${service.name}\n` +

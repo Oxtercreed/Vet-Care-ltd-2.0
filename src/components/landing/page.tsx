@@ -182,7 +182,7 @@ export function LandingPage() {
           <div data-parallax className="absolute inset-[-8%] size-[116%]">
             <Photo
               src="/images/vet/figma-hero-dog.jpg"
-              alt="Vet Care clinic"
+              alt="Richmond Vet hospital"
               className="size-full [mask-image:linear-gradient(to_bottom,black_70%,transparent)]"
               priority
             />
@@ -335,7 +335,7 @@ export function LandingPage() {
         <div className="mx-auto grid max-w-6xl items-stretch gap-0 md:grid-cols-2">
           <Photo
             src="/images/vet/figma-puppy-arms.jpg"
-            alt="Veterinary care at Vet Care LTD"
+            alt="Veterinary care at The Richmond Veterinary Hospital"
             className="min-h-80 md:min-h-[36rem]"
           />
           <div className="flex flex-col justify-center px-5 py-16 md:px-16">
@@ -353,7 +353,7 @@ export function LandingPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-5 py-20 md:px-8 md:py-28">
-        <p data-reveal className="text-micro uppercase tracking-[0.18em] text-muted">Why Vet Care</p>
+        <p data-reveal className="text-micro uppercase tracking-[0.18em] text-muted">Why Richmond Vet</p>
         <h2 className="mt-3 max-w-md font-display text-title font-normal">More than an appointment.</h2>
         <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-line">
           {[
@@ -396,7 +396,7 @@ export function LandingPage() {
             Your pet’s place.
           </h2>
           <p className="mt-6 max-w-md text-body text-muted">
-            Vet Care LTD is a veterinary clinic on Migombani Street, Mikocheni. We built it for thoughtful, unhurried care — wellness, vaccines, dental, diagnostics and grooming — with the same care we would want for our own pets.
+            The Richmond Veterinary Hospital is a modern companion animal hospital on Church Road, Richmond. We built it for thoughtful, unhurried care — wellness, vaccines, dental, diagnostics, surgery, and grooming — with the same care we would want for our own pets.
           </p>
           <Link to="/app" className="mt-8 inline-flex items-center gap-2 text-body">
             Meet the team
@@ -447,16 +447,16 @@ export function LandingPage() {
                 a: "We welcome walk-ins during normal clinic hours, though booking ensures minimal waiting. Critical pet emergencies always receive immediate triage priority.",
               },
               {
-                q: "What vaccinations does my dog or puppy need in Dar es Salaam?",
-                a: "Core vaccines for dogs include Rabies (legally required) and the DHLPP combination (Distemper, Hepatitis, Parvovirus, Parainfluenza). Monthly tick and flea prevention is also vital for coastal health.",
+                q: "What vaccinations does my dog or puppy need in the UK?",
+                a: "Core vaccines for dogs in the UK include Canine Parvovirus, Distemper, Canine Infectious Hepatitis, and Leptospirosis (L4). We also offer Kennel Cough and Rabies certification for international travel.",
               },
               {
                 q: "How do I know if my pet has an emergency?",
-                a: "Signs include difficulty breathing, severe lethargy, continuous vomiting, snakebite, suspected poisoning, or trauma. Call our emergency line at +255 713 325 000 immediately.",
+                a: "Signs include difficulty breathing, severe lethargy, continuous vomiting, suspected poisoning, or acute trauma. Call our emergency triage desk at +44 20 7946 0850 immediately.",
               },
               {
                 q: "What payment methods are accepted?",
-                a: "We accept M-Pesa, Airtel Money, Tigo Pesa, Visa & Mastercard, and cash.",
+                a: "We accept Visa, Mastercard, American Express, Apple Pay, Google Pay, and bank transfer / cash.",
               },
               {
                 q: "Do you offer medicated grooming?",
@@ -515,7 +515,7 @@ export function LandingPage() {
           </div>
           <div className="overflow-hidden rounded-[24px] border border-line bg-brand-soft">
             <iframe
-              title="Map of Vet Care LTD"
+              title="Map of The Richmond Veterinary Hospital"
               src={SALON.mapEmbed}
               className="h-72 w-full md:h-96 grayscale"
               loading="lazy"
@@ -576,7 +576,7 @@ export function LandingPage() {
         </div>
           <div className="mx-auto max-w-6xl px-5 pb-10 text-support text-muted md:px-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span>© 2026 Vet Care LTD</span>
+            <span>© 2026 The Richmond Veterinary Hospital</span>
             <span className="flex flex-wrap gap-4">
               <Link to="/enter" search={{ as: "customer" }} className="hover:text-ink">
                 Customer sign in

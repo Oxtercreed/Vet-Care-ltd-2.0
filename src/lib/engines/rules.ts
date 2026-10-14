@@ -126,8 +126,8 @@ const ROLE_ACTIONS: Record<StaffRole | "customer", StaffAction[]> = {
   ],
 };
 
-export function can(role: StaffRole | "customer", action: StaffAction) {
-  return ROLE_ACTIONS[role]?.includes(action) ?? false;
+export function can(role: StaffRole | "customer" | string, action: StaffAction) {
+  return (ROLE_ACTIONS as Record<string, StaffAction[]>)[role]?.includes(action) ?? false;
 }
 
 export function isOpenStatus(s: AppointmentStatus) {

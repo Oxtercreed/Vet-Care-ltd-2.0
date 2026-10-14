@@ -4,7 +4,7 @@ import { showBrowserNotification } from "@/lib/notifications/web-push";
 export function makeNotice(
   title: string,
   body: string,
-  audience: NoticeAudience,
+  audience: NoticeAudience = "customer",
   appointmentId?: string,
 ): Notice {
   const notice: Notice = {

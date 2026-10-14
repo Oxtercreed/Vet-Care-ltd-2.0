@@ -73,7 +73,7 @@ function StaffAppointment() {
     const result = await collectUntilPaid({
       phone: booking.customerPhone,
       amount: booking.remaining,
-      description: `Vet Care balance ${booking.id}`,
+      description: `${SALON.short} balance ${booking.id}`,
       bookingId: booking.id,
       customerId: booking.customerId,
       customerName: booking.customerName,
@@ -172,7 +172,7 @@ function StaffAppointment() {
           <div className="mt-4 grid grid-cols-1 gap-2">
             <a
               href={`${SALON.whatsapp}?text=${encodeURIComponent(
-                `Vet Care booking pass\n\nRef: ${appt.id}\nService: ${service?.name ?? "—"}\n` +
+                `${SALON.short} booking pass\n\nRef: ${appt.id}\nService: ${service?.name ?? "—"}\n` +
                   (appt.petName
                     ? `Pet: ${appt.petName}${appt.petType ? ` (${appt.petType})` : ""}\n`
                     : "") +
@@ -191,7 +191,7 @@ function StaffAppointment() {
             </a>
             <a
               href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-                `Vet Care: ${service?.name ?? "Visit"}${appt.petName ? ` — ${appt.petName}` : ""}`
+                `${SALON.short}: ${service?.name ?? "Visit"}${appt.petName ? ` — ${appt.petName}` : ""}`
               )}&details=${encodeURIComponent(
                 `Ref ${appt.id}\nParent: ${appt.customerName} (${appt.customerPhone})\n` +
                   (appt.petName ? `Pet: ${appt.petName}\n` : "") +

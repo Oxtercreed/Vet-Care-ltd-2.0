@@ -192,7 +192,7 @@ function BookPage() {
     const result = await collectUntilPaid({
       phone,
       amount: deposit,
-      description: `Vet Care ${service.name} deposit`,
+      description: `${SALON.short} ${service.name} deposit`,
       bookingId: held.id,
       customerId: held.customerId,
       customerName: held.customerName,

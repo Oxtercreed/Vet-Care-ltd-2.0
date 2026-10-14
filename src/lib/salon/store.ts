@@ -100,7 +100,7 @@ const defaultTemplates: NoticeTemplate[] = [
   { id: "tpl-cancel", title: "Cancellation", body: "Your appointment has been cancelled." },
   { id: "tpl-payment", title: "Payment", body: "Your payment has been received." },
   { id: "tpl-ready", title: "Vet ready", body: "Your veterinarian is ready for you." },
-  { id: "tpl-complete", title: "Completed", body: "Thanks for visiting Vet Care LTD. We'd love a review." },
+  { id: "tpl-complete", title: "Completed", body: "Thanks for visiting The Richmond Veterinary Hospital. We'd love a review." },
 ];
 
 function defaultGallery(): GalleryItem[] {
@@ -296,7 +296,7 @@ export const useSalonStore = create<SalonState>()(
               : state.session,
           profile:
             state.profile?.name === "Gadna Henry"
-              ? { name: "", phone: "", mpesaPhone: "" }
+              ? { name: "", phone: "", mpesaPhone: "", reminders: true, stylistReadyAlerts: true }
               : state.profile,
         });
       },
@@ -600,6 +600,7 @@ export const useSalonStore = create<SalonState>()(
       },
       setAppointmentStatus: (id, status) => {
         const map: Record<AppointmentStatus, Parameters<typeof applyEvent>[1] | null> = {
+          requested: null,
           payment_pending: null,
           confirmed: "pay_success",
           checked_in: "check_in",
@@ -982,7 +983,7 @@ export const useSalonStore = create<SalonState>()(
         }),
       addNotice: (n) =>
         set({
-          notices: [makeNotice(n.title, n.body, n.audience, n.appointmentId), ...get().notices],
+          notices: [makeNotice(n.title, n.body, n.audience || "customer", n.appointmentId), ...get().notices],
         }),
       setToast: (msg) => set({ toast: msg }),
       publishReview: (id, published) =>

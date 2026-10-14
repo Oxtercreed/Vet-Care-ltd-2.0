@@ -147,7 +147,7 @@ export function phaseCopy(phase: DisplayPhase, time?: string) {
     case "completed":
       return {
         title: "Completed",
-        body: "Thanks for visiting Vet Care LTD.",
+        body: "Thanks for visiting The Richmond Veterinary Hospital.",
       };
     case "cancelled":
       return {

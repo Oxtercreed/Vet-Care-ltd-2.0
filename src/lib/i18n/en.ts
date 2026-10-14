@@ -29,4 +29,8 @@ export const en = {
   },
 } as const;
 
-export type Dict = typeof en;
+export type Dict = {
+  [K in keyof typeof en]: {
+    [P in keyof (typeof en)[K]]: string;
+  };
+};

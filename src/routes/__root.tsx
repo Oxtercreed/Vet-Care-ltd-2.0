@@ -4,9 +4,9 @@ import { SalonBoot } from "@/lib/salon/boot";
 import { MotionProvider } from "@/components/motion-provider";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "Vet Care LTD";
+const APP_NAME = "The Richmond Veterinary Hospital";
 
-/** Public site URL (set VITE_SITE_URL in Vercel, e.g. https://vetcare.example) — makes share-image and canonical links absolute. */
+/** Public site URL (set VITE_SITE_URL in Vercel, e.g. https://richmondvet.co.uk) — makes share-image and canonical links absolute. */
 const SITE_URL = ((import.meta.env.VITE_SITE_URL as string | undefined) ?? "").trim().replace(/\/+$/, "");
 
 export const Route = createRootRoute({
@@ -18,19 +18,19 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Vet Care LTD — Thoughtful veterinary care on Migombani Street, Mikocheni. Book wellness, vaccines, dental, diagnostics and grooming in Dar es Salaam.",
+          "The Richmond Veterinary Hospital — Compassionate veterinary care and surgery on Church Road, Richmond. Book wellness exams, vaccinations, dental, diagnostics, and grooming in London.",
       },
       { name: "theme-color", content: "#2E3094" },
       {
         name: "keywords",
         content:
-          "vet care Dar es Salaam, veterinary clinic Mikocheni, pet hospital Migombani, dog cat vaccines Tanzania, Vet Care LTD, book vet appointment Dar es Salaam, animal hospital Mikocheni",
+          "veterinary hospital Richmond London, veterinary clinic Richmond Surrey, animal hospital London, pet clinic Church Road, dog cat vaccinations UK, The Richmond Veterinary Hospital, book vet appointment London",
       },
-      { name: "geo.region", content: "TZ-02" },
-      { name: "geo.placename", content: "Dar es Salaam" },
+      { name: "geo.region", content: "GB-ENG" },
+      { name: "geo.placename", content: "Richmond, London" },
       
       { property: "og:title", content: APP_NAME },
-      { property: "og:description", content: "Thoughtful veterinary care in Mikocheni, Dar es Salaam. Book wellness, vaccines, dental, diagnostics and grooming." },
+      { property: "og:description", content: "Compassionate veterinary care and surgical excellence in Richmond, Greater London. Book consultations, vaccinations, diagnostics, and wellness." },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: APP_NAME },
       { property: "og:image", content: `${SITE_URL}/og.jpg` },
@@ -38,7 +38,7 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: `${SITE_URL}/og.jpg` },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "Vet Care LTD" },
+      { name: "apple-mobile-web-app-title", content: "Richmond Vet" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },

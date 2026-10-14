@@ -38,16 +38,16 @@ export async function syncBooking(appt: Appointment, payment?: PaymentRecord | n
       await upsertPaymentFn({
         data: {
           id: payment.id,
-          bookingId: payment.bookingId,
-          customerId: payment.customerId,
-          customerName: payment.customerName,
+          bookingId: payment.bookingId ?? payment.appointmentId ?? "",
+          customerId: payment.customerId ?? "",
+          customerName: payment.customerName ?? "",
           amount: payment.amount,
           method: payment.method,
           status: payment.status,
           orderId: payment.orderId,
-          phone: payment.phone,
-          description: payment.description,
-          kind: payment.kind,
+          phone: payment.phone ?? "",
+          description: payment.description ?? "",
+          kind: payment.kind ?? "deposit",
         },
       });
     }
@@ -86,7 +86,7 @@ export function syncNotices(notices: Notice[]) {
             id: n.id,
             title: n.title,
             body: n.body,
-            audience: n.audience,
+            audience: n.audience ?? "all",
             appointmentId: n.appointmentId,
           },
         }),
@@ -94,6 +94,8 @@ export function syncNotices(notices: Notice[]) {
     );
   });
 }
+
+export const syncNotice = syncNotices;
 
 export function syncQueue(entries: QueueEntry[]) {
   fire(async () => {
@@ -106,7 +108,7 @@ export function syncQueue(entries: QueueEntry[]) {
             appointmentId: q.appointmentId,
             position: q.position,
             status: q.status,
-            arrivedAt: q.arrivedAt,
+            arrivedAt: q.arrivedAt ?? new Date().toISOString(),
             startedAt: q.startedAt,
             completedAt: q.completedAt,
           },
@@ -124,7 +126,7 @@ export function syncAudit(event: AuditEvent) {
         id: event.id,
         actor: event.actor,
         action: event.action,
-        target: event.target,
+        target: event.target ?? "",
         before: event.before,
         after: event.after,
       },
@@ -138,13 +140,13 @@ export function syncReview(review: ReviewRecord) {
     await upsertReviewFn({
       data: {
         id: review.id,
-        appointmentId: review.appointmentId,
+        appointmentId: review.appointmentId ?? "",
         customerName: review.customerName,
-        serviceId: review.serviceId,
-        stylistId: review.stylistId,
+        serviceId: review.serviceId ?? "",
+        stylistId: review.stylistId ?? "",
         rating: review.rating,
-        quote: review.quote,
-        published: review.published,
+        quote: review.quote ?? review.text ?? "",
+        published: review.published ?? true,
       },
     });
   });

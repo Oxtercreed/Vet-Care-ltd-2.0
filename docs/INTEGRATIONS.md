@@ -1,4 +1,4 @@
-# Vet Care LTD — Integrations
+# The Richmond Veterinary Hospital — Integrations
 
 Connect messaging without code changes.
 

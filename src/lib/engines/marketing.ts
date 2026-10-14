@@ -7,7 +7,7 @@ export function activeOfferFor(offers: OfferRecord[], serviceId: string, onDate 
       if (o.serviceId && o.serviceId !== serviceId) return false;
       if (o.start && onDate < o.start) return false;
       if (o.end && onDate > o.end) return false;
-      return o.discountPercent > 0;
+      return (o.discountPercent ?? 0) > 0;
     }) ?? null
   );
 }
@@ -15,6 +15,6 @@ export function activeOfferFor(offers: OfferRecord[], serviceId: string, onDate 
 export function applyDiscount(amount: number, offers: OfferRecord[], serviceId: string) {
   const offer = activeOfferFor(offers, serviceId);
   if (!offer) return { amount, discount: 0, offer: null };
-  const discount = Math.round(amount * (offer.discountPercent / 100));
+  const discount = Math.round(amount * ((offer.discountPercent ?? 0) / 100));
   return { amount: Math.max(100, amount - discount), discount, offer };
 }

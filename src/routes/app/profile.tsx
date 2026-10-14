@@ -3,6 +3,7 @@ import { Bell, ChevronRight, CircleHelp, CreditCard, Heart, Calendar, LogOut, Sl
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { useSalonStore } from "@/lib/salon/store";
+import { SALON } from "@/lib/salon/data";
 import { useHydrated } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/profile")({ component: ProfilePage });
@@ -90,7 +91,7 @@ function ProfilePage() {
           Sign out
         </Button>
       </div>
-      <p className="mt-10 text-center text-support text-muted">Vet Care LTD · Dar es Salaam</p>
+      <p className="mt-10 text-center text-support text-muted">{SALON.name} · London</p>
     </main>
   );
 }

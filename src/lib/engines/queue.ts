@@ -23,14 +23,15 @@ export function rebuildQueue(appointments: Appointment[], existing: QueueEntry[]
     .filter((e) => e.status === "waiting")
     .sort((a, b) => {
       if (a.position && b.position && a.position !== b.position) return a.position - b.position;
-      return a.arrivedAt.localeCompare(b.arrivedAt);
+      return (a.arrivedAt ?? "").localeCompare(b.arrivedAt ?? "");
     })
     .map((e, i) => ({ ...e, position: i + 1 }));
   const rest = entries.filter((e) => e.status !== "waiting");
   return [...waiting, ...rest];
 }
 
-export function waitingMinutes(arrivedAt: string, now = new Date()) {
+export function waitingMinutes(arrivedAt?: string, now = new Date()) {
+  if (!arrivedAt) return 0;
   return Math.max(0, Math.round((now.getTime() - new Date(arrivedAt).getTime()) / 60000));
 }
 

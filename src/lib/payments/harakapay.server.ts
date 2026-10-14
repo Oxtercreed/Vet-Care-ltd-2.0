@@ -10,15 +10,16 @@ const COLLECT_TIMEOUT_MS = 25_000;
 const STATUS_TIMEOUT_MS = 12_000;
 
 function defaultWebhookUrl(): string | undefined {
+  const vercel = env("VERCEL_URL");
   const explicit =
     env("PAYMENT_WEBHOOK_URL") ||
     env("BETTER_AUTH_URL") ||
-    (env("VERCEL_URL") ? `https://${env("VERCEL_URL").replace(/^https?:\/\//, "")}` : undefined);
+    (vercel ? `https://${vercel.replace(/^https?:\/\//, "")}` : undefined);
   if (explicit) {
     const origin = explicit.replace(/\/+$/, "");
     return `${origin}/api/payments/webhook`;
   }
-  return "https://wsalon-gadnaherys-projects.vercel.app/api/payments/webhook";
+  return "https://richmondvet-preview.vercel.app/api/payments/webhook";
 }
 
 function apiKey() {

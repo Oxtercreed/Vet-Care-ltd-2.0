@@ -137,6 +137,10 @@ export type Appointment = {
   needsProviderConfirm?: boolean;
   providerConfirmed?: boolean;
   paymentOrderId?: string;
+  discountPercent?: number;
+  photoConsent?: boolean;
+  beforePhoto?: string;
+  afterPhoto?: string;
 };
 
 export type Customer = {
@@ -195,14 +199,17 @@ export type NoticeTemplate = {
   body: string;
 };
 
+export type NoticeAudience = "customer" | "staff" | "admin" | "all";
+
 export type Notice = {
   id: string;
   title: string;
   body: string;
   time: string;
   read: boolean;
-  audience?: "customer" | "staff" | "admin" | "all";
+  audience?: NoticeAudience;
   href?: string;
+  appointmentId?: string;
 };
 
 export type GalleryItem = {
@@ -216,30 +223,47 @@ export type GalleryItem = {
 
 export type OfferRecord = {
   id: string;
-  label: string;
+  label?: string;
   title: string;
   copy: string;
-  serviceId: string;
+  serviceId?: string;
+  start?: string;
+  end?: string;
   image?: string;
   active?: boolean;
   discountPercent?: number;
 };
 
+export type PaymentStatus = "pending" | "completed" | "failed" | "refunded" | string;
+
 export type PaymentRecord = {
   id: string;
-  appointmentId: string;
+  appointmentId?: string;
+  bookingId?: string;
+  customerId?: string;
+  customerName?: string;
+  orderId?: string;
+  phone?: string;
+  description?: string;
+  kind?: string;
   amount: number;
   method: PaymentMethod;
-  status: string;
+  status: PaymentStatus;
   createdAt: string;
+  completedAt?: string;
   ref?: string;
 };
+
+export type QueueStatus = "waiting" | "in_service" | "completed" | "cancelled" | string;
 
 export type QueueEntry = {
   id: string;
   appointmentId: string;
   position: number;
-  status: string;
+  status: QueueStatus;
+  arrivedAt?: string;
+  startedAt?: string;
+  completedAt?: string;
 };
 
 export type ReviewRecord = {
@@ -247,8 +271,12 @@ export type ReviewRecord = {
   appointmentId?: string;
   customerName: string;
   rating: number;
-  text: string;
+  text?: string;
+  quote?: string;
   service?: string;
+  serviceId?: string;
+  stylistId?: string;
+  published?: boolean;
   createdAt: string;
 };
 
@@ -257,6 +285,9 @@ export type AuditEvent = {
   action: string;
   actor: string;
   at: string;
+  target?: string;
+  before?: string;
+  after?: string;
   meta?: Record<string, unknown>;
 };
 

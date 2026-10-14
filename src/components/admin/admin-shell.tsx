@@ -85,7 +85,7 @@ export function AdminShell() {
         <Link to="/admin">
           <LogoWord />
         </Link>
-        <p className="mt-2 text-micro uppercase tracking-[0.16em] text-muted">Vet Care · Admin</p>
+        <p className="mt-2 text-micro uppercase tracking-[0.16em] text-muted">Richmond Vet · Admin</p>
         <NavList pathname={pathname} />
         <div className="mt-auto flex items-center gap-3 px-2 pt-4">
           <span className="flex size-9 items-center justify-center rounded-full bg-ink font-display text-sm text-white">

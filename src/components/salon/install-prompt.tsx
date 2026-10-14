@@ -32,7 +32,7 @@ function isIos(): boolean {
 }
 
 /**
- * Prompt to install Vet Care and enable push notifications.
+ * Prompt to install Richmond Vet and enable push notifications.
  * Used for staff, admin, and customers.
  */
 export function InstallPrompt({ portal }: { portal: Portal }) {
@@ -80,13 +80,13 @@ export function InstallPrompt({ portal }: { portal: Portal }) {
       ? "Install Admin app"
       : portal === "staff"
         ? "Install Staff app"
-        : "Install Vet Care";
+        : "Install Richmond Vet";
   const body =
     portal === "admin"
-      ? "Add Vet Care Admin to your home screen. Stay signed in and get payment & booking alerts on your phone."
+      ? "Add Richmond Vet Admin to your home screen. Stay signed in and get payment & booking alerts on your phone."
       : portal === "staff"
-        ? "Add Vet Care Staff to your home screen. Stay signed in and get new request alerts so you can confirm bookings."
-        : "Add Vet Care to your home screen. Allow notifications for confirmations, payment, and appointment reminders.";
+        ? "Add Richmond Vet Staff to your home screen. Stay signed in and get new request alerts so you can confirm bookings."
+        : "Add Richmond Vet to your home screen. Allow notifications for confirmations, payment, and appointment reminders.";
 
   function dismiss() {
     localStorage.setItem(KEY(portal), "1");

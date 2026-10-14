@@ -1,4 +1,4 @@
-/** Browser / PWA notification helpers for the Vet Care app. */
+/** Browser / PWA notification helpers for the Richmond Vet app. */
 
 export type NotifyPermission = NotificationPermission | "unsupported";
 
